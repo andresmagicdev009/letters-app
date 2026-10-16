@@ -10,7 +10,7 @@
     "logo" (opcional) es la URL o ruta de la imagen del artista, p. ej. 'img/daft-punk.png'.
 */
 window.CARTAS = {
-  LOCK_ENABLED: false,         // true = pide la clave al entrar
+  LOCK_ENABLED: true,         // true = pide la clave al entrar
   PASSCODE_HASH: '',
   PASSCODE_FALLBACK: '20261016',
 
