@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inicio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='12' fill='%23E6E1D6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500&family=Lora:wght@400&family=Nunito:wght@400;600;700&family=Playfair+Display:wght@600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- MUNDO 1 · BLOQUEO (neutral) -->
+<div id="lock" class="lock">
+  <div class="lock__glow lock__glow--a" aria-hidden="true"></div>
+  <div class="lock__glow lock__glow--b" aria-hidden="true"></div>
+  <div class="lock__glow lock__glow--c" aria-hidden="true"></div>
+  <form class="lock__box" id="lockForm" autocomplete="off" novalidate>
+    <h1 class="lock__title" id="lockTitle">Ingresa tu clave</h1>
+    <div class="cells" id="cells" role="group" aria-labelledby="lockTitle"></div>
+    <p class="lock__msg" id="lockMsg" role="status" aria-live="polite"></p>
+  </form>
+  <div class="lock__fade" id="lockFade" aria-hidden="true"></div>
+</div>
+
+<!-- MUNDO 2 · INTERIOR (se inyecta tras desbloquear) -->
+<template id="interiorTpl">
+  <div class="interior" id="interior">
+    <main class="page" id="page">
+      <div class="theme" role="radiogroup" aria-labelledby="themeLabel">
+        <span class="theme__label" id="themeLabel">
+          <svg viewBox="0 0 24 24" class="i-fill" aria-hidden="true"><path d="M12 3a9 9 0 000 18c1.1 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.8-1.7H16a5 5 0 005-5C21 6.4 17 3 12 3zm-5.5 9a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3-4a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm3 4a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"/></svg>
+          Color
+        </span>
+        <button type="button" class="theme__opt" role="radio" data-theme-opt="rosa" aria-checked="true"><span class="theme__dot" style="--c:linear-gradient(135deg,#EC5C8A,#B8365F)"></span>Rosa</button>
+        <button type="button" class="theme__opt" role="radio" data-theme-opt="rojo" aria-checked="false"><span class="theme__dot" style="--c:linear-gradient(135deg,#E5484D,#8E1A24)"></span>Rojo</button>
+        <button type="button" class="theme__opt" role="radio" data-theme-opt="azul" aria-checked="false"><span class="theme__dot" style="--c:linear-gradient(135deg,#5B8DEF,#1E3A8A)"></span>Azul</button>
+      </div>
+      <h1 class="page__title">Cartas para mi chiquita ♥️💞</h1>
+
+      <div class="sheet-wrap" id="letterWrap">
+        <svg class="spark spark--1" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0Z"/></svg>
+        <svg class="spark spark--2" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0Z"/></svg>
+        <svg class="spark spark--3" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0Z"/></svg>
+        <svg class="spark spark--4" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0Z"/></svg>
+
+        <article class="paper" id="paper" aria-live="polite"></article>
+      </div>
+
+      <nav class="letter-nav" aria-label="Navegación de cartas">
+        <button type="button" class="round-btn" id="prevLetter" aria-label="Carta anterior">
+          <svg viewBox="0 0 24 24" class="i-stroke"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <div class="dots" id="dots" role="img"></div>
+        <button type="button" class="round-btn" id="nextLetter" aria-label="Carta siguiente">
+          <svg viewBox="0 0 24 24" class="i-stroke"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </nav>
+    </main>
+
+    <!-- Mini-reproductor (móvil) -->
+    <div class="mini" id="mini">
+      <button type="button" class="mini__open" id="openPlayer" aria-label="Abrir reproductor" aria-expanded="false" aria-controls="player">
+        <span class="cover cover--sm" data-cover><img class="cover__logo" data-logo alt="" hidden></span>
+        <span class="mini__text">
+          <span class="mini__title" data-title></span>
+          <span class="mini__artist" data-artist-text></span>
+        </span>
+      </button>
+      <button type="button" class="play-btn" data-toggle aria-label="Reproducir">
+        <svg viewBox="0 0 24 24" class="i-fill i-play"><path d="M8 5.5v13l11-6.5z"/></svg>
+        <svg viewBox="0 0 24 24" class="i-fill i-pause"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+      </button>
+    </div>
+
+    <div class="scrim" id="scrim" aria-hidden="true"></div>
+
+    <!-- Reproductor: bottom sheet en móvil, panel lateral en desktop -->
+    <section class="player" id="player" role="dialog" aria-label="Reproductor">
+      <header class="player__head">
+        <button type="button" class="handle" id="handle" aria-label="Cerrar reproductor" tabindex="-1"><span></span></button>
+        <span class="player__label">Canciones que se que te gustarán ♥️👨‍🚀🚀💞 </span>
+        <button type="button" class="icon-btn player__close" id="closePlayer" aria-label="Cerrar reproductor">
+          <svg viewBox="0 0 24 24" class="i-stroke i-down"><path d="M6 9l6 6 6-6"/></svg>
+          <svg viewBox="0 0 24 24" class="i-stroke i-x"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </header>
+      <div class="player__body">
+        <div class="cover cover--lg" data-cover aria-hidden="true"><img class="cover__logo" data-logo alt="" hidden></div>
+        <div class="player__meta">
+          <h2 class="player__title" data-title></h2>
+          <p class="player__artist" data-artist></p>
+        </div>
+        <div class="progress">
+          <div class="progress__bar" id="seek" role="slider" tabindex="0" aria-label="Progreso de la canción" aria-valuemin="0">
+            <div class="progress__track"><div class="progress__fill" id="fill"></div><div class="progress__thumb" id="thumb"></div></div>
+          </div>
+          <div class="progress__times"><span id="elapsed">0:00</span><span id="total">0:00</span></div>
+        </div>
+        <div class="controls">
+          <button type="button" class="icon-btn icon-btn--pink" id="prevTrack" aria-label="Canción anterior">
+            <svg viewBox="0 0 24 24" class="i-fill"><rect x="5" y="6" width="2.4" height="12" rx="1.2"/><path d="M19 6.6v10.8c0 .8-.9 1.3-1.6.8L9.6 13a1.2 1.2 0 010-2l7.8-5.2c.7-.5 1.6 0 1.6.8z"/></svg>
+          </button>
+          <button type="button" class="play-btn play-btn--lg" data-toggle aria-label="Reproducir">
+            <svg viewBox="0 0 24 24" class="i-fill i-play"><path d="M8 5.5v13l11-6.5z"/></svg>
+            <svg viewBox="0 0 24 24" class="i-fill i-pause"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+          </button>
+          <button type="button" class="icon-btn icon-btn--pink" id="nextTrack" aria-label="Canción siguiente">
+            <svg viewBox="0 0 24 24" class="i-fill"><rect x="16.6" y="6" width="2.4" height="12" rx="1.2"/><path d="M5 6.6v10.8c0 .8.9 1.3 1.6.8l7.8-5.2a1.2 1.2 0 000-2L6.6 5.8C5.9 5.3 5 5.8 5 6.6z"/></svg>
+          </button>
+        </div>
+        <div class="volume">
+          <button type="button" class="icon-btn volume__mute" id="mute" aria-label="Silenciar" aria-pressed="false">
+            <svg viewBox="0 0 24 24" class="i-fill i-vol"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 8.5a5 5 0 010 7M18 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg viewBox="0 0 24 24" class="i-fill i-muted"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <input type="range" class="volume__range" id="volume" min="0" max="100" step="1" value="80" aria-label="Volumen">
+        </div>
+        <h3 class="playlist__label">Lista de canciones</h3>
+        <ul class="playlist" id="playlist"></ul>
+      </div>
+    </section>
+    <audio id="audio" preload="metadata"></audio>
+  </div>
+</template>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
