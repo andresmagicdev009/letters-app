@@ -148,7 +148,7 @@
   }
 
   function initLetters() {
-    const paper = $('#paper'), dots = $('#dots'), prev = $('#prevLetter'), next = $('#nextLetter');
+    const paper = $('#paper');
     let idx = 0;
     const render = () => {
       const L = D.LETTERS[idx];
@@ -159,16 +159,10 @@
         `<h2 class="paper__greeting">${esc(L.greeting)}</h2>` +
         `<div class="paper__body">${L.body.map(p => `<p>${esc(p)}</p>`).join('')}</div>` +
         `<p class="paper__sign">${esc(L.signature)}</p>`;
-      dots.innerHTML = D.LETTERS.map((_, i) => `<span class="${i === idx ? 'is-active' : ''}"></span>`).join('');
-      dots.setAttribute('aria-label', `Carta ${idx + 1} de ${D.LETTERS.length}`);
-      prev.setAttribute('aria-disabled', String(idx === 0));
-      next.setAttribute('aria-disabled', String(idx === D.LETTERS.length - 1));
       const wrap = $('#letterWrap');
       wrap.style.animation = 'none'; void wrap.offsetWidth; wrap.style.animation = '';
       $('#page').scrollTo({ top: 0 });
     };
-    prev.addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
-    next.addEventListener('click', () => { if (idx < D.LETTERS.length - 1) { idx++; render(); } });
     render();
   }
 
@@ -254,33 +248,6 @@
       } else if (i === cur) audio.paused ? audio.play().catch(() => {}) : audio.pause();
       else load(i, true);
     });
-
-    /* Volumen */
-    const vol = $('#volume'), muteBtn = $('#mute');
-    let lastVol = 0.8;
-    try { const v = parseFloat(localStorage.getItem('cartas.vol')); if (v > 0 && v <= 1) lastVol = v; } catch {}
-    audio.volume = lastVol;
-    function paintVolume() {
-      const v = audio.muted ? 0 : audio.volume, pct = Math.round(v * 100);
-      vol.value = pct; vol.style.setProperty('--p', pct + '%');
-      vol.setAttribute('aria-valuetext', `${pct}%`);
-      const muted = v === 0;
-      muteBtn.parentElement.classList.toggle('is-muted', muted);
-      muteBtn.setAttribute('aria-pressed', String(muted));
-      muteBtn.setAttribute('aria-label', muted ? 'Activar sonido' : 'Silenciar');
-    }
-    vol.addEventListener('input', () => {
-      const v = vol.value / 100;
-      audio.muted = false; audio.volume = v;
-      if (v > 0) lastVol = v;
-      try { localStorage.setItem('cartas.vol', String(v)); } catch {}
-    });
-    muteBtn.addEventListener('click', () => {
-      if (audio.muted || audio.volume === 0) { audio.muted = false; audio.volume = lastVol; }
-      else audio.muted = true;
-    });
-    audio.addEventListener('volumechange', paintVolume);
-    paintVolume();
 
     audio.addEventListener('timeupdate', paintProgress);
     audio.addEventListener('loadedmetadata', paintProgress);
