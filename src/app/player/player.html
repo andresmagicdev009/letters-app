@@ -1,0 +1,108 @@
+@let t = player.track();
+@let playing = player.playing();
+
+<ng-template #playPauseIcon>
+  @if (playing) {
+    <svg viewBox="0 0 24 24" class="i-fill" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+  } @else {
+    <svg viewBox="0 0 24 24" class="i-fill i-play" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+  }
+</ng-template>
+
+<!-- Mini-reproductor (móvil) -->
+<div class="mini">
+  <button #openBtn type="button" class="mini__open" aria-label="Abrir reproductor"
+          [attr.aria-expanded]="open()" aria-controls="player" (click)="setOpen(true)">
+    <span class="cover cover--sm" [style.background]="coverBg(t)">
+      @if (t.logo) { <img class="cover__logo" [src]="t.logo" alt=""> }
+    </span>
+    <span class="mini__text">
+      <span class="mini__title">{{ t.title }}</span>
+      <span class="mini__artist">{{ t.artist }}</span>
+    </span>
+  </button>
+  <button type="button" class="play-btn" [attr.aria-label]="playing ? 'Pausar' : 'Reproducir'" (click)="player.toggle()">
+    <ng-container [ngTemplateOutlet]="playPauseIcon" />
+  </button>
+</div>
+
+<div class="scrim" aria-hidden="true" (click)="setOpen(false)"></div>
+
+<!-- Reproductor: bottom sheet en móvil, panel lateral en desktop -->
+<section class="player" id="player" role="dialog" aria-label="Reproductor" [attr.aria-hidden]="!open()">
+  <header class="player__head" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+    <button type="button" class="handle" aria-label="Cerrar reproductor" tabindex="-1" (click)="setOpen(false)"><span></span></button>
+    <span class="player__label">Canciones que se que te gustarán ♥️👨‍🚀🚀💞 </span>
+    <button #closeBtn type="button" class="icon-btn player__close" aria-label="Cerrar reproductor" (click)="setOpen(false)">
+      <svg viewBox="0 0 24 24" class="i-stroke i-down"><path d="M6 9l6 6 6-6"/></svg>
+      <svg viewBox="0 0 24 24" class="i-stroke i-x"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </header>
+  <div class="player__body">
+    <div class="cover cover--lg" aria-hidden="true" [style.background]="coverBg(t)">
+      @if (t.logo) { <img class="cover__logo" [src]="t.logo" alt=""> }
+    </div>
+    <div class="player__meta">
+      <h2 class="player__title">{{ t.title }}</h2>
+      <p class="player__artist">
+        @if (t.logo) { <img class="artist-logo" [src]="t.logo" alt="" loading="lazy"> }{{ t.artist }}
+      </p>
+    </div>
+    <div class="progress">
+      <div class="progress__bar" role="slider" tabindex="0" aria-label="Progreso de la canción" aria-valuemin="0"
+           [attr.aria-valuemax]="round(player.duration())"
+           [attr.aria-valuenow]="round(player.currentTime())"
+           [attr.aria-valuetext]="fmt(player.currentTime()) + ' de ' + fmt(player.duration())"
+           (pointerdown)="onSeekStart($event)" (pointermove)="onSeekMove($event)"
+           (pointerup)="onSeekEnd()" (pointercancel)="onSeekEnd()" (keydown)="onSeekKey($event)">
+        <div class="progress__track">
+          <div class="progress__fill" [style.width.%]="progress()"></div>
+          <div class="progress__thumb" [style.left.%]="progress()"></div>
+        </div>
+      </div>
+      <div class="progress__times"><span>{{ fmt(player.currentTime()) }}</span><span>{{ fmt(player.duration()) }}</span></div>
+    </div>
+    <div class="controls">
+      <button type="button" class="icon-btn icon-btn--pink" aria-label="Canción anterior" (click)="player.prev()">
+        <svg viewBox="0 0 24 24" class="i-fill"><rect x="5" y="6" width="2.4" height="12" rx="1.2"/><path d="M19 6.6v10.8c0 .8-.9 1.3-1.6.8L9.6 13a1.2 1.2 0 010-2l7.8-5.2c.7-.5 1.6 0 1.6.8z"/></svg>
+      </button>
+      <button type="button" class="play-btn play-btn--lg" [attr.aria-label]="playing ? 'Pausar' : 'Reproducir'" (click)="player.toggle()">
+        <ng-container [ngTemplateOutlet]="playPauseIcon" />
+      </button>
+      <button type="button" class="icon-btn icon-btn--pink" aria-label="Canción siguiente" (click)="player.next()">
+        <svg viewBox="0 0 24 24" class="i-fill"><rect x="16.6" y="6" width="2.4" height="12" rx="1.2"/><path d="M5 6.6v10.8c0 .8.9 1.3 1.6.8l7.8-5.2a1.2 1.2 0 000-2L6.6 5.8C5.9 5.3 5 5.8 5 6.6z"/></svg>
+      </button>
+    </div>
+
+    <h3 class="playlist__label">Lista de canciones</h3>
+    <ul class="playlist">
+      @for (row of player.tracks; track $index; let i = $index) {
+        @let active = i === player.index();
+        @let fav = player.favorites().has(i);
+        <li class="row" [class.is-active]="active">
+          <button type="button" class="row__main" [attr.aria-current]="active"
+                  [attr.aria-label]="(active && playing ? 'Pausar ' : 'Reproducir ') + row.title + ', ' + row.artist"
+                  (click)="player.select(i)">
+            <span class="row__num">
+              @if (active && playing) {
+                <svg class="i-fill row__play" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+              } @else {
+                <svg class="i-fill row__play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+              }
+            </span>
+            <span class="cover cover--sm" [style.background]="coverBg(row)">
+              @if (row.logo) { <img class="cover__logo" [src]="row.logo" alt="" loading="lazy"> }
+            </span>
+            <span class="row__text"><span class="row__title">{{ row.title }}</span><span class="row__artist">{{ row.artist }}</span></span>
+            <span class="row__dur">{{ fmt(row.duration) }}</span>
+          </button>
+          <button type="button" class="fav" [attr.aria-pressed]="fav"
+                  [attr.aria-label]="fav ? 'Quitar de favoritas' : 'Añadir a favoritas'" (click)="player.toggleFavorite(i)">
+            <svg viewBox="0 0 24 24"><path d="M12 20s-7.2-4.4-9.2-8.8C1.4 8 3.3 4.5 6.8 4.5c2 0 3.4 1.1 5.2 3 1.8-1.9 3.2-3 5.2-3 3.5 0 5.4 3.5 4 6.7C19.2 15.6 12 20 12 20z"/></svg>
+            <svg class="fav__spark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C13 8 16 11 24 12C16 13 13 16 12 24C11 16 8 13 0 12C8 11 11 8 12 0Z"/></svg>
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+</section>

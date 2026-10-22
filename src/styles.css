@@ -1,1 +1,108 @@
-/* You can add global styles to this file, and also import other style files */
+/* ───────── Tokens ───────── */
+:root {
+  /* Bloqueo */
+  --lock-bg: linear-gradient(180deg, #FFFBEB 0%, #FFF4CC 52%, #FFE9A8 100%);
+  --cell: #FFFFFF;
+  --cell-border: #F2D98A;
+  --cell-active: #E0A800;
+  --cell-ring: #C98F00;
+  --lock-text: #3D3420;
+  --lock-text-2: #7A6A45;
+  --lock-error: #B4532A;
+
+  /* Interior */
+  --bg: linear-gradient(180deg, #FFF1F5 0%, #FFE0EA 55%, #FFF6D6 100%);
+  --paper: #FFFBF7;
+  --rule: #F3D9E2;
+  --margin-line: rgba(229, 72, 77, .35);
+  --pink: #EC5C8A;
+  --pink-strong: #B8365F;
+  --pink-press: #9E2C51;
+  --red: #D62F45;
+  --blue: #3F5FD9;
+  --yellow: #FFD45C;
+  --white: #FFFFFF;
+  --ink: #2B1F24;
+  --ink-2: #5E4A52;
+  --track: #FFE0EA;
+  --surface: #FFF1F5;
+  /* mismos colores en formato r, g, b para sombras y transparencias */
+  --accent-rgb: 236, 92, 138;   /* --pink */
+  --shadow-rgb: 184, 54, 95;    /* --pink-strong */
+  --red-rgb: 214, 47, 69;       /* --red */
+  --blue-rgb: 63, 95, 217;      /* --blue */
+
+  /* Tipografía */
+  --f-title: 'Playfair Display', Georgia, serif;
+  --f-body: 'Lora', Georgia, serif;
+  --f-ui: 'Nunito', system-ui, sans-serif;
+  --f-sign: 'Dancing Script', cursive;
+
+  /* Espaciado 4px · radios */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px;
+  --s8: 32px; --s10: 40px; --s12: 48px; --s16: 64px;
+  --r-sm: 8px; --r-md: 16px; --r-lg: 24px; --r-pill: 999px;
+
+  --line: 32px;
+  --ease: cubic-bezier(.22, .8, .3, 1);
+  --dur: 300ms;
+  --focus: 2px solid var(--blue);
+}
+
+/* ───────── Temas (el rosa es el de :root) ───────── */
+:root[data-theme="rojo"] {
+  --bg: linear-gradient(180deg, #FFF1EF 0%, #FFD9D3 55%, #FFF4E8 100%);
+  --paper: #FFFBF8;
+  --rule: #F5D3CE;
+  --margin-line: rgba(200, 16, 46, .35);
+  --pink: #E5484D;
+  --pink-strong: #B4232F;
+  --pink-press: #8E1A24;
+  --red: #C8102E;
+  --blue: #8E1A24;
+  --ink: #2B1D1D;
+  --ink-2: #5E4646;
+  --track: #FFD9D3;
+  --surface: #FFF1EF;
+  --accent-rgb: 229, 72, 77;
+  --shadow-rgb: 180, 35, 47;
+  --red-rgb: 200, 16, 46;
+  --blue-rgb: 142, 26, 36;
+}
+:root[data-theme="azul"] {
+  --bg: linear-gradient(180deg, #F0F5FF 0%, #DCE6FF 55%, #F3F0FF 100%);
+  --paper: #FBFCFF;
+  --rule: #D6E0F5;
+  --margin-line: rgba(63, 95, 217, .35);
+  --pink: #5B8DEF;
+  --pink-strong: #2F55B8;
+  --pink-press: #234190;
+  --red: #3F5FD9;
+  --blue: #1E3A8A;
+  --ink: #1C2333;
+  --ink-2: #4A5470;
+  --track: #DCE6FF;
+  --surface: #F0F5FF;
+  --accent-rgb: 91, 141, 239;
+  --shadow-rgb: 47, 85, 184;
+  --red-rgb: 63, 95, 217;
+  --blue-rgb: 30, 58, 138;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--f-ui);
+  -webkit-font-smoothing: antialiased;
+  background: #FFFBEB;
+  overflow: hidden;
+}
+button { font: inherit; color: inherit; }
+a { color: var(--blue); }
+a:hover { color: var(--pink-strong); }
+svg { display: block; }
+.i-stroke { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.i-fill { fill: currentColor; }
+
+.interior button:focus-visible { outline: var(--focus); outline-offset: 2px; }

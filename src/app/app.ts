@@ -1,12 +1,15 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { LOCK_ENABLED } from './data';
+import { Home } from './home/home';
+import { Lock } from './lock/lock';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
-  styleUrl: './app.css',
+  imports: [Home, Lock],
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('letters-app');
+  /** El interior se monta debajo del bloqueo mientras este se desvanece. */
+  protected readonly unlocked = signal(!LOCK_ENABLED);
+  protected readonly showLock = signal(LOCK_ENABLED);
 }

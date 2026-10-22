@@ -1,0 +1,28 @@
+<div class="lock" [class.is-unlocking]="unlocking()">
+  <div class="lock__glow lock__glow--a" aria-hidden="true"></div>
+  <div class="lock__glow lock__glow--b" aria-hidden="true"></div>
+  <div class="lock__glow lock__glow--c" aria-hidden="true"></div>
+  <form class="lock__box" autocomplete="off" novalidate (submit)="$event.preventDefault()">
+    <h1 class="lock__title" id="lockTitle">Ingresa tu clave</h1>
+    <div class="cells" role="group" aria-labelledby="lockTitle"
+         [class.is-error]="status() === 'error'" [class.is-ok]="status() === 'ok'" [class.is-shaking]="shaking()">
+      @for (i of slots; track i) {
+        <input #cell class="cell" type="text" inputmode="numeric" pattern="[0-9]*"
+               [attr.autocomplete]="i === 0 ? 'one-time-code' : 'off'"
+               [attr.aria-label]="'Dígito ' + (i + 1) + ' de ' + slots.length"
+               [attr.aria-invalid]="status() === 'error' ? 'true' : null"
+               (input)="onInput(i, cell)" (keydown)="onKeydown(i, $event)"
+               (paste)="onPaste(i, $event)" (focus)="cell.select()">
+      }
+    </div>
+    <p class="lock__msg" [class.is-error]="status() === 'error'" role="status" aria-live="polite">
+      @if (status() === 'ok') {
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" class="i-stroke" style="stroke-width:2.4"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        <span>Listo</span>
+      } @else {
+        {{ message() }}
+      }
+    </p>
+  </form>
+  <div class="lock__fade" aria-hidden="true"></div>
+</div>
